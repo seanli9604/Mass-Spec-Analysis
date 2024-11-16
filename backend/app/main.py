@@ -7,6 +7,7 @@ import json
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import engine, get_db
 from app.models import Base
+import requests
 
 app = FastAPI()
 
@@ -25,8 +26,6 @@ class MassSpectrumData(BaseModel):
 def root():
     return {"message": "Hello world!"}
 
-import requests
-
 def process_mass_spectrum(file_path):
     HOST_IP = 'host.docker.internal'  # Host's IP address
     PORT = 8001
@@ -39,6 +38,7 @@ def process_mass_spectrum(file_path):
 
 @app.post("/analyse")
 def analyse(data: MassSpectrumData):
+
     with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=".txt") as temp_file:
         temp_file.write(data.data)
         temp_file_path = temp_file.name

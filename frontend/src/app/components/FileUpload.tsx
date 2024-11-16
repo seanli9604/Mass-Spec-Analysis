@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { parseMassSpectrum, PeakData } from '../utils/parseMassSpectrum';
+import { parseMassSpectrum } from '../utils/parseMassSpectrum';
 import SpectrumChart from './SpectrumChart';
 
 interface FileUploadProps {
