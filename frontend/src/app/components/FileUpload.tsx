@@ -31,6 +31,7 @@ export default function FileUpload({ onFileChange }: FileUploadProps) {
 
   const handleClearFile = () => {
     setSelectedFile(null);
+    setPeakData(null);
     onFileChange(null);
     const fileInput = document.getElementById('file-upload') as HTMLInputElement;
     if (fileInput) {

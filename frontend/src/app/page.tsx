@@ -43,6 +43,9 @@ export default function HomePage() {
           setSmilesArr([]); // Clear results on error
           setShowResults(true);
         }
+      } else {
+        setSmilesArr([]);
+        setShowResults(false);
       }
     };
     
