@@ -36,7 +36,7 @@ export default function HomePage() {
           }
     
           const data = await response.json(); // Assuming backend returns { smiles: string[] }
-          setSmilesArr(data.smiles || []);
+          setSmilesArr(data || []);
           setShowResults(true); // Show results after successful fetch
         } catch (error) {
           console.error("Error during analysis:", error);
