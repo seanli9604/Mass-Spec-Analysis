@@ -55,31 +55,11 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-roboto container mx-auto px-4">
-      <header className="bg-white border-b border-gray-300">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="w-10 h-10 bg-gray-300 mr-3"></div>
-            <h1 className="text-xl font-bold">MoleClue</h1>
-          </div>
-          <nav>
-            <ul className="flex space-x-4">
-              <li>
-                <a href="/about" className="text-gray-700 hover:text-gray-900">
-                  About
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-10 text-center">
-        <h2 className="text-3xl font-bold mb-6">Try our demo</h2>
-        <FileUpload onFileChange={handleFileChange} />
-        {showResults && <Results smilesArr={smilesArr} />}
-        {loading && <RiseLoader color="#848484" size="5px" className="mt-10" />}
-      </main>
-    </div>
+    <>
+      <h2 className="text-3xl font-bold mb-6">Try our demo</h2>
+      <FileUpload onFileChange={handleFileChange} />
+      {showResults && <Results smilesArr={smilesArr} />}
+      {loading && <RiseLoader color="#848484" size="5px" className="mt-10" />}
+    </>
   );
 }
