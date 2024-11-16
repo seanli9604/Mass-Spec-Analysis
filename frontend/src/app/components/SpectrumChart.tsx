@@ -1,61 +1,89 @@
 "use client";
 
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  LineElement,
-  PointElement,
+  BarElement,
   LinearScale,
-  CategoryScale,
   Title,
   Tooltip,
-  Legend,
   ChartOptions,
 } from 'chart.js';
 
-// Register required Chart.js components
-ChartJS.register(
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(BarElement, LinearScale, Title, Tooltip);
 
 interface SpectrumChartProps {
   peakData: { mz: number; intensity: number }[];
 }
 
 export default function SpectrumChart({ peakData }: SpectrumChartProps) {
+  const fgColor = 'black';
   const chartData = {
-    labels: peakData.map((point) => point.mz.toFixed(2)),
     datasets: [
       {
         label: 'Mass Spectrum',
-        data: peakData.map((point) => point.intensity),
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        data: peakData.map((point) => ({ x: point.mz, y: point.intensity })),
+        borderColor: fgColor,
+        backgroundColor: fgColor,
         borderWidth: 1,
-        pointRadius: 0,
+        barThickness: 2,
       },
     ],
   };
 
-  const options: ChartOptions<'line'> = {
+  const options: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
       x: {
-        type: 'category', // Explicit type for the x-axis scale
-        title: { display: true, text: 'm/z' },
+        type: 'linear',
+        title: {
+          display: true,
+          text: 'm/z',
+          color: 'black',
+        },
+        ticks: {
+          color: 'black',
+          font: {
+            size: 10,
+          },
+          major: {
+            enabled: true,
+          },
+        },
+        grid: {
+          display: false,
+        }
       },
       y: {
-        title: { display: true, text: 'Intensity' },
+        title: {
+          display: true,
+          text: 'Intensity',
+          color: 'black',
+        },
+        ticks: {
+          color: 'black',
+          font: {
+            size: 10,
+          },
+          callback: (value) => Number(value).toExponential().toUpperCase(),
+        },
+        grid: {
+          display: false,
+        }
+      },
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const raw = context.raw as { x: number; y: number };
+            return `Intensity: ${raw.y}`;
+          },
+        },
       },
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  return <Bar data={chartData} options={options} />;
 }
