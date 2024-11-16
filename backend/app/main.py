@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import engine, get_db
 from app.models import Base
 import requests
+import re
 
 app = FastAPI()
 
@@ -35,7 +36,13 @@ def process_mass_spectrum(file_path):
     response = requests.post(url, files=files)
     result = response.json()['result']
 
-    return result
+    result = result[:-2] + ']'
+
+    result = re.sub(r"'", '"', result)
+
+
+    return json.loads(result)
+
 
 @app.post("/analyse")
 def analyse(data: MassSpectrumData):
