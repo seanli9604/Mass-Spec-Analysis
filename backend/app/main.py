@@ -34,6 +34,10 @@ def process_mass_spectrum(file_path):
     files = {'file': open(file_path, 'rb')}
     response = requests.post(url, files=files)
     result = response.json()['result']
+
+    # interpret the result as a JSON string
+    result = json.loads(result)
+
     return result
 
 @app.post("/analyse")
