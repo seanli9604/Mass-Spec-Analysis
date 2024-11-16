@@ -12,16 +12,15 @@ export default function ResultBox({ smiles }: ResultBoxProps) {
 
   useEffect(() => {
     if (smiles) {
-      fetch(process.env.NEXT_PUBLIC_API_URL+'/iupac', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ smiles }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setIupacName(data.iupacName);
+      fetch(`https://cactus.nci.nih.gov/chemical/structure/${encodeURIComponent(smiles)}/iupac_name`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then((iupacName) => {
+          setIupacName(iupacName.trim());
         })
         .catch((error) => {
           console.error('Error fetching IUPAC name:', error);

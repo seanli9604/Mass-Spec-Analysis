@@ -69,7 +69,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-20 text-center">
+      <main className="container mx-auto px-4 py-10 text-center">
         <h2 className="text-3xl font-bold mb-6">Try our demo</h2>
         <FileUpload onFileChange={handleFileChange} />
         {showResults && <Results smilesArr={smilesArr} />}
