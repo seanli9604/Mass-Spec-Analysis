@@ -50,12 +50,12 @@ export default function HomePage() {
   console.log(setSmilesArr);
 
   return (
-    <div className="min-h-screen bg-white font-roboto">
+    <div className="min-h-screen bg-white font-roboto container mx-auto px-4">
       <header className="bg-white border-b border-gray-300">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <div className="w-10 h-10 bg-gray-300 mr-3"></div>
-            <h1 className="text-xl font-bold">Company Name</h1>
+            <h1 className="text-xl font-bold">MoleClue</h1>
           </div>
           <nav>
             <ul className="flex space-x-4">

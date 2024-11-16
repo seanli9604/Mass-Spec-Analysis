@@ -39,7 +39,7 @@ export default function FileUpload({ onFileChange }: FileUploadProps) {
   };
 
   return (
-    <div className="border border-gray-300 p-4 w-1/3 mx-auto text-left">
+    <div className="border border-gray-300 p-4 w-full sm:w-1/2 lg:w-1/3 mx-auto text-left">
       <label
         htmlFor="file-upload"
         className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 mb-4 text-center"
