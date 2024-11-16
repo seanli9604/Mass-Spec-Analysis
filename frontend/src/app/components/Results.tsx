@@ -14,7 +14,7 @@ export default function Results({ smilesArr }: ResultsProps) {
       } pb-0`}
     >
       {smilesArr.length > 0 ? (
-        smilesArr.map((item, index) => <ResultBox id={index} smiles={item} />)
+        smilesArr.map((item, index) => <ResultBox key={index} id={index} smiles={item} />)
       ) : (
         <p className="text-center pb-4">No results found 🙁</p>
       )}
