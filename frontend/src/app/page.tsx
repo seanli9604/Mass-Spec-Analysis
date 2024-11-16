@@ -41,7 +41,7 @@ export default function HomePage() {
         } catch (error) {
           console.error("Error during analysis:", error);
           setSmilesArr([]); // Clear results on error
-          setShowResults(false);
+          setShowResults(true);
         }
       }
     };
