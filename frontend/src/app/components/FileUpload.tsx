@@ -29,6 +29,7 @@ export default function FileUpload({ onFileChange }: FileUploadProps) {
 
   const handleFileUpload = async (file: File) => {
     setSelectedFile(file);
+    setPeakData(null);
     setParseError(false);
 
     try {
