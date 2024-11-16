@@ -8,13 +8,37 @@ export default function HomePage() {
   const [showResults, setShowResults] = useState(false);
   const [smilesArr, setSmilesArr] = useState(
     [
-      "Cn1cnc2c1c(=O)n(C)c(=O)n2C", // caffeine
-      "OC[C@H]1O[C@@H](O[C@H]2[C@H](O)[C@@H](CO)O[C@H](CO)O2)[C@@H](O)[C@H](O)[C@H]1O", // sugar
+      // "Cn1cnc2c1c(=O)n(C)c(=O)n2C", // caffeine
+      // "OC[C@H]1O[C@@H](O[C@H]2[C@H](O)[C@@H](CO)O[C@H](CO)O2)[C@@H](O)[C@H](O)[C@H]1O", // sugar
     ]
     );
 
-  const handleFileChange = (file: File | null) => {
-    setShowResults(!!file);
+  const handleFileChange = async (file: File | null) => {
+    if (file) {
+      setShowResults(false); // Reset results while loading
+      
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch(process.env.NEXT_PUBLIC_API_URL+'/analyse', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to analyse file');
+        }
+
+        const data = await response.json(); // Assuming backend returns { smiles: string[] }
+        setSmilesArr(data.smiles || []);
+        setShowResults(true); // Show results after successful fetch
+      } catch (error) {
+        console.error("Error during analysis:", error);
+        setSmilesArr([]); // Clear results on error
+        setShowResults(false);
+      }
+    }
   };
 
   console.log(setSmilesArr);
