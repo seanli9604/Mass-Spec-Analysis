@@ -13,33 +13,39 @@ export default function HomePage() {
     ]
     );
 
-  const handleFileChange = async (file: File | null) => {
-    if (file) {
-      setShowResults(false); // Reset results while loading
-      
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await fetch(process.env.NEXT_PUBLIC_API_URL+'/analyse', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to analyse file');
+    const handleFileChange = async (file: File | null) => {
+      if (file) {
+        setShowResults(false); // Reset results while loading
+    
+        try {
+          const fileContent = await file.text();
+          const payload = JSON.stringify({
+            data: fileContent,
+          });
+    
+          const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/analyse', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: payload,
+          });
+    
+          if (!response.ok) {
+            throw new Error('Failed to analyse file');
+          }
+    
+          const data = await response.json(); // Assuming backend returns { smiles: string[] }
+          setSmilesArr(data.smiles || []);
+          setShowResults(true); // Show results after successful fetch
+        } catch (error) {
+          console.error("Error during analysis:", error);
+          setSmilesArr([]); // Clear results on error
+          setShowResults(false);
         }
-
-        const data = await response.json(); // Assuming backend returns { smiles: string[] }
-        setSmilesArr(data.smiles || []);
-        setShowResults(true); // Show results after successful fetch
-      } catch (error) {
-        console.error("Error during analysis:", error);
-        setSmilesArr([]); // Clear results on error
-        setShowResults(false);
       }
-    }
-  };
+    };
+    
 
   console.log(setSmilesArr);
 
