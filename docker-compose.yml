@@ -27,3 +27,14 @@ services:
     depends_on:
       - backend
       - frontend
+
+  db:
+    image: postgres:14-alpine
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    restart: always
