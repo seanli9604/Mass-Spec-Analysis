@@ -78,7 +78,7 @@ export default function HomePage() {
         <h2 className="text-3xl font-bold mb-6">Try our demo</h2>
         <FileUpload onFileChange={handleFileChange} />
         {showResults && <Results smilesArr={smilesArr} />}
-        {loading && <RiseLoader color="#848484" size="5" className="mt-10" />}
+        {loading && <RiseLoader color="#848484" size="5px" className="mt-10" />}
       </main>
     </div>
   );

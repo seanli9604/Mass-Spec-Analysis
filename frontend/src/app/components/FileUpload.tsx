@@ -10,20 +10,28 @@ interface FileUploadProps {
 
 export default function FileUpload({ onFileChange }: FileUploadProps) {
   const [peakData, setPeakData] = useState<{ mz: number; intensity: number }[] | null>(null);
+  const [parseError, setParseError] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       setSelectedFile(file);
+      setParseError(false);
 
       try {
         const fileContent = await file.text(); // Read file content
         const parsedData = parseMassSpectrum(fileContent); // Parse the content
-        setPeakData(parsedData);
+        if (parsedData.length > 0 && !(Number.isNaN(parsedData[0].mz) && Number.isNaN(parsedData[0].intensity))) {
+          setPeakData(parsedData);
+        } else {
+          setPeakData(null);
+          setParseError(true);
+        }
         onFileChange(file); // Pass parsed data to parent
       } catch (error) {
         console.error("Error reading or parsing file:", error);
+        setParseError(true);
         onFileChange(null); // Reset if error occurs
       }
     }
@@ -32,6 +40,7 @@ export default function FileUpload({ onFileChange }: FileUploadProps) {
   const handleClearFile = () => {
     setSelectedFile(null);
     setPeakData(null);
+    setParseError(false);
     onFileChange(null);
     const fileInput = document.getElementById('file-upload') as HTMLInputElement;
     if (fileInput) {
@@ -53,6 +62,9 @@ export default function FileUpload({ onFileChange }: FileUploadProps) {
         className="hidden"
         onChange={handleFileChange}
       />
+      {parseError && (
+        <p className="text-red-500 text-center">Error parsing file.</p>
+      )}
       {peakData && (
         <div className="mt-6">
           <SpectrumChart peakData={peakData} />
