@@ -1,18 +1,22 @@
 "use client";
 
-import { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
+import { SmilesSvgRenderer } from 'react-ocl';
 
-export default function Home() {
+export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showMolecule, setShowMolecule] = useState(false);
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       setSelectedFile(event.target.files[0]);
+      setShowMolecule(true);
     }
   };
 
   const handleClearFile = () => {
     setSelectedFile(null);
+    setShowMolecule(false);
     const fileInput = document.getElementById('file-upload') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = "";
@@ -24,7 +28,7 @@ export default function Home() {
       {/* Header */}
       <header className="bg-white border-b border-gray-300">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center overflow-hidden">
+          <div className="flex items-center">
             <div className="w-10 h-10 bg-gray-300 mr-3"></div>
             <h1 className="text-xl font-bold">Company Name</h1>
           </div>
@@ -53,9 +57,9 @@ export default function Home() {
             className="hidden"
             onChange={handleFileChange}
           />
-          <div className="mt-2">
+          <div className="mt-2 flex items-center overflow-hidden">
             {selectedFile ? (
-              <div className="flex items-center">
+              <>
                 <span className="mr-2 truncate flex-grow">{selectedFile.name}</span>
                 <button
                   onClick={handleClearFile}
@@ -63,12 +67,21 @@ export default function Home() {
                 >
                   &times;
                 </button>
-              </div>
+              </>
             ) : (
               <span className="text-gray-500">No file selected</span>
             )}
           </div>
         </div>
+
+        {/* Visualization Box */}
+        {showMolecule && (
+          <div className="border border-gray-300 p-4 w-1/3 mx-auto mt-8">
+            <h3 className="text-xl font-bold mb-4">Molecular Structure</h3>
+            <SmilesSvgRenderer smiles="COCCOOOCO" />
+            <p className="text-gray-700">IUPAC Name: 1,3,7-Trimethylxanthine (Caffeine)</p>
+          </div>
+        )}
       </main>
     </div>
   );
