@@ -1,11 +1,33 @@
 "use client";
 
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SmilesSvgRenderer } from 'react-ocl';
 
 export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showMolecule, setShowMolecule] = useState(false);
+  const [smiles, setSmiles] = useState("Cn1cnc2c1c(=O)n(C)c(=O)n2C");
+  const [iupacName, setIupacName] = useState<string>("");
+
+  useEffect(() => {
+    if (showMolecule) {
+      fetch('/api/iupac', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ smiles }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setIupacName(data.iupacName);
+        })
+        .catch((error) => {
+          console.error('Error fetching IUPAC name:', error);
+          setIupacName("");
+        });
+    }
+  }, [showMolecule, smiles]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -17,6 +39,7 @@ export default function HomePage() {
   const handleClearFile = () => {
     setSelectedFile(null);
     setShowMolecule(false);
+    setIupacName("");
     const fileInput = document.getElementById('file-upload') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = "";
@@ -78,8 +101,10 @@ export default function HomePage() {
         {showMolecule && (
           <div className="border border-gray-300 p-4 w-1/3 mx-auto mt-8">
             <h3 className="text-xl font-bold mb-4">Molecular Structure</h3>
-            <SmilesSvgRenderer smiles="COCCOOOCO" />
-            <p className="text-gray-700">IUPAC Name: 1,3,7-Trimethylxanthine (Caffeine)</p>
+            <div className="flex justify-center">
+              <SmilesSvgRenderer smiles={smiles} />
+            </div>
+            {iupacName && (<p className="text-gray-700 mt-4">{iupacName}</p>)}
           </div>
         )}
       </main>
