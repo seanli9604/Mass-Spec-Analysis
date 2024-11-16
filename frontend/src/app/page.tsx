@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import FileUpload from './components/FileUpload';
 import Results from './components/Results';
+import RiseLoader from "react-spinners/RiseLoader";
 
 export default function HomePage() {
   const [showResults, setShowResults] = useState(false);
@@ -11,46 +12,47 @@ export default function HomePage() {
       // "Cn1cnc2c1c(=O)n(C)c(=O)n2C", // caffeine
       // "OC[C@H]1O[C@@H](O[C@H]2[C@H](O)[C@@H](CO)O[C@H](CO)O2)[C@@H](O)[C@H](O)[C@H]1O", // sugar
     ]
-    );
+  );
+  const [loading, setLoading] = useState(false);
 
-    const handleFileChange = async (file: File | null) => {
-      if (file) {
-        setShowResults(false); // Reset results while loading
-    
-        try {
-          const fileContent = await file.text();
-          const payload = JSON.stringify({
-            data: fileContent,
-          });
-    
-          const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/analyse', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: payload,
-          });
-    
-          if (!response.ok) {
-            throw new Error('Failed to analyse file');
-          }
-    
-          const data = await response.json(); // Assuming backend returns { smiles: string[] }
-          setSmilesArr(data || []);
-          setShowResults(true); // Show results after successful fetch
-        } catch (error) {
-          console.error("Error during analysis:", error);
-          setSmilesArr([]); // Clear results on error
-          setShowResults(true);
+  const handleFileChange = async (file: File | null) => {
+    if (file) {
+      setShowResults(false); // Reset results while loading
+      setLoading(true);
+  
+      try {
+        const fileContent = await file.text();
+        const payload = JSON.stringify({
+          data: fileContent,
+        });
+  
+        const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/analyse', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: payload,
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to analyse file');
         }
-      } else {
-        setSmilesArr([]);
-        setShowResults(false);
+  
+        const data = await response.json();
+        setSmilesArr(data || []);
+      } catch (error) {
+        console.error("Error during analysis:", error);
+        setSmilesArr([]); // Clear results on error
       }
-    };
-    
 
-  console.log(setSmilesArr);
+      setLoading(false);
+      setShowResults(true);
+    } else {
+      setSmilesArr([]);
+      setLoading(false);
+      setShowResults(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white font-roboto container mx-auto px-4">
@@ -76,6 +78,7 @@ export default function HomePage() {
         <h2 className="text-3xl font-bold mb-6">Try our demo</h2>
         <FileUpload onFileChange={handleFileChange} />
         {showResults && <Results smilesArr={smilesArr} />}
+        {loading && <RiseLoader color="#848484" size="5" className="mt-10" />}
       </main>
     </div>
   );
