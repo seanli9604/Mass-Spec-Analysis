@@ -17,6 +17,8 @@ export default function HomePage() {
     setShowResults(!!file);
   };
 
+  console.log(setSmilesArr);
+
   return (
     <div className="min-h-screen bg-white font-roboto">
       <header className="bg-white border-b border-gray-300">
