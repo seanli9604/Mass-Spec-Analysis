@@ -8,6 +8,8 @@ export function parseMassSpectrum(fileContent: string): PeakData[] {
     return parseJCAMPDX(fileContent);
   } else if (fileContent.includes('PK$PEAK:')) {
     return parseMassBank(fileContent);
+  } else if (/^[\d.,\s]+$/.test(fileContent.trim())) {
+    return parseCSV(fileContent);
   } else {
     throw new Error('Unsupported file format');
   }
@@ -48,4 +50,12 @@ function parseJCAMPDX(fileContent: string): PeakData[] {
   }
 
   return peaks;
+}
+
+function parseCSV(fileContent: string): PeakData[] {
+  const lines = fileContent.trim().split(/\r?\n/);
+  return lines.map((line: string) => {
+    const [mz, intensity] = line.split(',').map(Number);
+    return { mz, intensity };
+  });
 }
