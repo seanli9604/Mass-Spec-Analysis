@@ -68,7 +68,9 @@ export default function FileUpload({ onFileChange }: FileUploadProps) {
   return (
     <div
       {...getRootProps()}
-      className="border border-gray-300 p-4 w-full sm:w-1/2 lg:w-1/3 mx-auto text-left"
+      className={`transition-all duration-300 border border-gray-300 p-4 w-full sm:w-1/2 lg:w-1/3 mx-auto text-left ${
+        isDragActive ? 'scale-105' : 'scale-100'
+      }`}
     >
       <label
         htmlFor="file-upload"
