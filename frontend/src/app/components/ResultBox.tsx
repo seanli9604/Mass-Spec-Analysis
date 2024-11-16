@@ -36,7 +36,13 @@ export default function ResultBox({ id, smiles }: ResultBoxProps) {
       <div className="flex justify-center">
         <SmilesSvgRenderer smiles={smiles} />
       </div>
-      {iupacName && <p className="text-gray-700 mt-4">{iupacName}</p>}
+      {iupacName && <p className="text-gray-700 mt-4 mb-2">{iupacName}</p>}
+      <details>
+        <summary>
+          SMILES code
+        </summary>
+        <p className="text-gray-500 text-xs">{smiles}</p>
+      </details>
     </div>
   );
 }
