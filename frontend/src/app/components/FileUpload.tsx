@@ -1,19 +1,31 @@
 "use client";
 
 import { useState } from 'react';
+import { parseMassSpectrum, PeakData } from '../utils/parseMassSpectrum';
+import SpectrumChart from './SpectrumChart';
 
 interface FileUploadProps {
   onFileChange: (file: File | null) => void;
 }
 
 export default function FileUpload({ onFileChange }: FileUploadProps) {
+  const [peakData, setPeakData] = useState<{ mz: number; intensity: number }[] | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       setSelectedFile(file);
-      onFileChange(file);
+
+      try {
+        const fileContent = await file.text(); // Read file content
+        const parsedData = parseMassSpectrum(fileContent); // Parse the content
+        setPeakData(parsedData);
+        onFileChange(file); // Pass parsed data to parent
+      } catch (error) {
+        console.error("Error reading or parsing file:", error);
+        onFileChange(null); // Reset if error occurs
+      }
     }
   };
 
@@ -40,6 +52,11 @@ export default function FileUpload({ onFileChange }: FileUploadProps) {
         className="hidden"
         onChange={handleFileChange}
       />
+      {peakData && (
+        <div className="mt-6">
+          <SpectrumChart peakData={peakData} />
+        </div>
+      )}
       <div className="mt-2 flex items-center overflow-hidden">
         {selectedFile ? (
           <>
