@@ -12,7 +12,7 @@ export default function ResultBox({ smiles }: ResultBoxProps) {
 
   useEffect(() => {
     if (smiles) {
-      fetch('/api/iupac', {
+      fetch(process.env.NEXT_PUBLIC_API_URL+'/iupac', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -21,7 +21,7 @@ export default function HomePage() {
         const formData = new FormData();
         formData.append("file", file);
 
-        const response = await fetch('/api/analyse', {
+        const response = await fetch(process.env.NEXT_PUBLIC_API_URL+'/analyse', {
           method: 'POST',
           body: formData,
         });
