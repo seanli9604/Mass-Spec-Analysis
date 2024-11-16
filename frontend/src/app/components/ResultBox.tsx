@@ -23,7 +23,7 @@ export default function ResultBox({ smiles }: ResultBoxProps) {
           setIupacName(iupacName.trim());
         })
         .catch((error) => {
-          console.error('Error fetching IUPAC name:', error);
+          console.log('Error fetching IUPAC name:', error);
           setIupacName("");
         });
     }
