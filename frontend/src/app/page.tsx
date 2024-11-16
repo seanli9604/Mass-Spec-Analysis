@@ -6,7 +6,7 @@ import Results from './components/Results';
 
 export default function HomePage() {
   const [showResults, setShowResults] = useState(false);
-  const [smilesArr, setSmilesArr] = useState(
+  const [smilesArr, setSmilesArr] = useState<string[]>(
     [
       // "Cn1cnc2c1c(=O)n(C)c(=O)n2C", // caffeine
       // "OC[C@H]1O[C@@H](O[C@H]2[C@H](O)[C@@H](CO)O[C@H](CO)O2)[C@@H](O)[C@H](O)[C@H]1O", // sugar
