@@ -6,10 +6,11 @@ import SpectrumChart from './SpectrumChart';
 import { useDropzone } from 'react-dropzone';
 
 interface FileUploadProps {
+  demo: boolean;
   onFileChange: (file: File | null) => void;
 }
 
-export default function FileUpload({ onFileChange }: FileUploadProps) {
+export default function FileUpload({ demo, onFileChange }: FileUploadProps) {
   const [peakData, setPeakData] = useState<{ mz: number; intensity: number }[] | null>(null);
   const [parseError, setParseError] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -41,7 +42,9 @@ export default function FileUpload({ onFileChange }: FileUploadProps) {
         setPeakData(null);
         setParseError(true);
       }
-      onFileChange(file);
+      if (demo) {
+        onFileChange(file);
+      }
     } catch (error) {
       console.error("Error reading or parsing file:", error);
       setParseError(true);
@@ -109,6 +112,17 @@ export default function FileUpload({ onFileChange }: FileUploadProps) {
           <span className="text-gray-500">No file selected</span>
         )}
       </div>
+      {
+        !demo && selectedFile && !parseError &&
+        <>
+          <p className="text-gray-600 text-sm mt-2">Processing this file will use 1 credit.</p>
+          <div className="flex justify-center mt-2" onClick={() => { onFileChange(selectedFile) }}>
+            <button className="block border border-gray-300 w-full px-4 py-2 cursor-pointer hover:bg-gray-100 text-center">
+              Process
+            </button>
+          </div>
+        </>
+      }
     </div>
   );
 }

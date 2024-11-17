@@ -1,15 +1,21 @@
+"use client";
+
 import Link from "next/link";
-import BuyToken from "./BuyToken";
+import { useSession } from "next-auth/react";
 
 export default function NavButtons() {
+  const { status } = useSession();
+
   return (
     <>
-      <BuyToken />
+      <Link href="/" className="text-gray-700 hover:text-gray-900 mr-6">
+        Home
+      </Link> 
       <Link href="/about" className="text-gray-700 hover:text-gray-900 mr-6">
         About
       </Link>
       <Link href="/login" className="text-gray-700 hover:text-gray-900">
-        Login
+        {status === "unauthenticated" ? "Login" : "Account"}
       </Link>
     </>
   );
