@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from 'react';
 import { parseMassSpectrum } from '../utils/parseMassSpectrum';
+import { getFile, sampleFiles } from '../utils/sampleFiles';
+import type { SampleFile } from '../utils/sampleFiles';
 import SpectrumChart from './SpectrumChart';
 import { useDropzone } from 'react-dropzone';
 
@@ -56,6 +58,7 @@ export default function FileUpload({ demo, onFileChange }: FileUploadProps) {
     onDrop,
     maxFiles: 1,
     noClick: true,
+    disabled: demo,
   });
 
   const handleClearFile = () => {
@@ -76,12 +79,30 @@ export default function FileUpload({ demo, onFileChange }: FileUploadProps) {
         isDragActive ? 'scale-105' : 'scale-100'
       }`}
     >
-      <label
-        htmlFor="file-upload"
-        className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 mb-4 text-center"
-      >
-        Click or drag to upload file
-      </label>
+      {
+        demo ?
+        <>
+          <p className="mb-2">Select one of our prepared samples:</p>
+          {
+            sampleFiles.map(({ label, fileIndex }: SampleFile, idx: number) => (
+              <button
+                key={idx}
+                onClick={() => { handleFileUpload(getFile(fileIndex)) }}
+                className="block border border-gray-300 w-full px-4 py-1 cursor-pointer hover:bg-gray-100 text-center mb-2"
+              >
+                {label}
+              </button>
+            ))
+          }
+        </>
+        :
+        <label
+          htmlFor="file-upload"
+          className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 mb-4 text-center"
+        >
+          Click or drag to upload file
+        </label>
+      }
       <input
         {...getInputProps()}
         id="file-upload"
