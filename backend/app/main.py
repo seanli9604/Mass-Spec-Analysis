@@ -119,6 +119,7 @@ async def webhook_received(request: Request):
 
 class MassSpectrumData(BaseModel):
     data: str
+    filename: str
 
 @app.get("/")
 def root():
@@ -144,7 +145,9 @@ def process_mass_spectrum(file_path):
 @app.post("/analyse")
 def analyse(data: MassSpectrumData):
 
-    with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=".txt") as temp_file:
+    suffix = f".{data.filename.split('.')[-1]}" if '.' in data.filename else '.txt'
+
+    with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=suffix) as temp_file:
         temp_file.write(data.data)
         temp_file_path = temp_file.name
 
