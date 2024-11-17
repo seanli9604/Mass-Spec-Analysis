@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { SmilesSvgRenderer } from 'react-ocl';
 
 interface ResultBoxProps {
+  id: number;
   smiles: string;
 }
 
-export default function ResultBox({ smiles }: ResultBoxProps) {
+export default function ResultBox({ id, smiles }: ResultBoxProps) {
   const [iupacName, setIupacName] = useState<string>("");
 
   useEffect(() => {
@@ -31,11 +32,17 @@ export default function ResultBox({ smiles }: ResultBoxProps) {
 
   return (
     <div className="border border-gray-300 p-4 mx-auto mb-4">
-      <h3 className="text-xl font-bold mb-4">Molecular Structure</h3>
+      <h3 className="text-xl font-bold mb-4">Molecular Structure {id+1}</h3>
       <div className="flex justify-center">
         <SmilesSvgRenderer smiles={smiles} />
       </div>
-      {iupacName && <p className="text-gray-700 mt-4">{iupacName}</p>}
+      {iupacName && <p className="text-gray-700 mt-4 mb-2">{iupacName}</p>}
+      <details>
+        <summary>
+          SMILES code
+        </summary>
+        <p className="text-gray-500 text-xs">{smiles}</p>
+      </details>
     </div>
   );
 }
