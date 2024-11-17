@@ -26,7 +26,7 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   useEffect(() => {
     fetchCredits(); // Fetch credits on mount
-  }, []);
+  }, [fetchCredits]);
 
   return (
     <UserContext.Provider value={{ credits, fetchCredits }}>

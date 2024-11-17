@@ -12,7 +12,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     fetchCredits(); // Fetch credits on mount
-  }, []);
+  }, [fetchCredits]);
 
   const handleSignIn = async () => {
     setIsLoading(true);

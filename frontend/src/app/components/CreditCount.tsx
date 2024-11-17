@@ -9,7 +9,7 @@ export default function CreditCount() {
 
   useEffect(() => {
     fetchCredits(); // Fetch credits on mount
-  }, []);
+  }, [fetchCredits]);
 
   return (
     <>
