@@ -34,7 +34,7 @@ class CreateCheckoutSessionRequest(BaseModel):
 class GetUserCredits(BaseModel):
     email_address: str
 
-YOUR_DOMAIN = 'https://www.moleclue.org'
+YOUR_DOMAIN = 'https://moleclue.org'
 
 async def add_tokens_to_user_account(email_addr: str):
     async with AsyncSession(engine) as session:
@@ -104,7 +104,7 @@ async def webhook_received(request: Request):
     except stripe.error.SignatureVerificationError:
         return {"error": "Invalid signature"}
 
-    if event['get_user_credits'] == 'checkout.session.completed':
+    if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         # Retrieve the user ID from the session
         email_address = session.get('client_reference_id')

@@ -10,7 +10,9 @@ services:
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
-
+    env_file:
+      - .env
+      
   frontend:
     build:
       context: ./frontend

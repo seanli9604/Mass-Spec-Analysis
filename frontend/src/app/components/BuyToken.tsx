@@ -2,23 +2,30 @@
 
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
+import { useSession } from 'next-auth/react';
 
 const stripePromise = loadStripe('pk_test_51QLy8NDiMJiLt3SALGtlYu5iR5OBku3P44vr6F0Edubpc78eVQHINWYeJkh1BOfryybwJEbTGaVSeM74WfEeVpAs00xj2ZkxRq');
 
 const BuyToken: React.FC = () => {
     const [loading, setLoading] = useState(false);
+    const { data: loginsession, status } = useSession();
+
+    console.log(loginsession);
 
     const handleClick = async () => {
         setLoading(true);
         const stripe = await stripePromise;
 
-        const response = await fetch('http://localhost:8000/create-checkout-session', {
+        console.log(process.env.NEXT_PUBLIC_API_URL)
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/create-checkout-session`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                quantity: 1, // Set the desired quantity
+                quantity: 1,
+                email_address: loginsession?.user?.email,
             }),
         });
 
@@ -47,15 +54,30 @@ const BuyToken: React.FC = () => {
         setLoading(false);
     };
 
-    return (
-        <button
-            className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 mb-4 text-center"
-            onClick={handleClick}
-            disabled={loading}
-        >
-            {loading ? 'Loading...' : 'Buy Tokens'}
-        </button>
-    );
+
+    if (status === 'authenticated') {
+        return (
+            <button
+                className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 w-full mb-4 text-center"
+                onClick={handleClick}
+                disabled={loading}
+            >
+                {loading ? 'Loading...' : 'Buy Tokens'}
+            </button>
+        );
+    } else {
+        return (
+            <button
+                className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 w-full mb-4 text-center"
+                onClick={handleClick}
+                disabled={true}
+            >
+                Login to buy tokens
+            </button>
+        );
+    }
+
+   
 };
 
 export default BuyToken;
