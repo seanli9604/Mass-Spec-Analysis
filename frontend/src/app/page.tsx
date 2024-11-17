@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useSession } from "next-auth/react";
 import FileUpload from './components/FileUpload';
 import Results from './components/Results';
 import RiseLoader from "react-spinners/RiseLoader";
@@ -54,12 +55,25 @@ export default function HomePage() {
     }
   };
 
-  return (
-    <>
-      <h2 className="text-3xl font-bold mb-6">Try our demo</h2>
-      <FileUpload onFileChange={handleFileChange} />
-      {showResults && <Results smilesArr={smilesArr} />}
-      {loading && <RiseLoader color="#848484" size="5px" className="mt-10" />}
-    </>
-  );
+  const { status } = useSession();
+
+  if (status === "authenticated") {
+    return (
+      <>
+        <h2 className="text-3xl font-bold mb-6">Upload Data</h2>
+        <FileUpload demo={false} onFileChange={handleFileChange} />
+        {showResults && <Results smilesArr={smilesArr} />}
+        {loading && <RiseLoader color="#848484" size="5px" className="mt-10" />}
+      </>
+    );
+  } else {
+    return (
+      <>
+        <h2 className="text-3xl font-bold mb-6">Try our demo</h2>
+        <FileUpload demo={true} onFileChange={handleFileChange} />
+        {showResults && <Results smilesArr={smilesArr} />}
+        {loading && <RiseLoader color="#848484" size="5px" className="mt-10" />}
+      </>
+    );
+  }
 }
