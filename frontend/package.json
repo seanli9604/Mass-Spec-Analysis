@@ -9,13 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^4.10.0",
     "chart.js": "^4.4.6",
     "next": "15.0.3",
     "openchemlib": "^8.17.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "19.0.0-rc-66855b96-20241106",
-    "react-ocl": "^7.0.2"
+    "react-ocl": "^7.0.2",
+    "stripe": "^17.3.1"
   },
   "devDependencies": {
     "@types/node": "^20",
