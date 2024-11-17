@@ -25,6 +25,7 @@ export default function HomePage() {
         const fileContent = await file.text();
         const payload = JSON.stringify({
           data: fileContent,
+          filename: file.name,
         });
   
         const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/analyse', {
