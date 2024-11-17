@@ -119,7 +119,6 @@ async def webhook_received(request: Request):
 
 class MassSpectrumData(BaseModel):
     data: str
-    email_address: str
 
 @app.get("/")
 def root():
