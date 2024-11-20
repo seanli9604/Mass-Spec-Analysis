@@ -52,9 +52,50 @@ export default function ApiPage() {
       <h3 className="text-2xl text-center font-semibold mb-6">
         API Documentation
       </h3>
-      <p>
-        API endpoints are located at `/api/&lt;endpoint&gt;`. Include the API token as part of the request `Authorization` header as `Bearer: &lt;token&gt;`.
+      <h4 className="text-xl font-semibold mb-2">
+        Access
+      </h4>
+      <p className="mb-6">
+        API endpoints are located at <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">/api/&lt;endpoint&gt;</span>.
+        Include the API token as part of the request <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">Authorization</span> header as <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">Bearer: &lt;token&gt;</span>.
       </p>
+      <h4 className="text-xl font-semibold mb-2">
+        Endpoints
+      </h4>
+      <ul className="mb-12">
+        <li className="flex flex-row mb-4">
+          <div className="min-w-fit mr-4">
+            <span className="font-mono text-sm">POST</span> <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">/process</span>:
+          </div>
+          <p>
+            Processes a mass spectrometry file and returns a list of SMILES codes as possible results. The body of the request should take the form of a JSON object with keys{" "}
+            <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">data</span>{" "}
+            (corresponding to the contents of the file) and{" "}
+            <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">filename</span>{" "}
+            (the file extension of which determines how the engine will interpret the filetype).
+            Accepted file extensions are{" "}
+            <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">*.txt</span> &mdash; MassBank,{" "}
+            <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">*.jdx</span> &mdash; JCAMP-DX,{" "}
+            <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">*.csv</span> &mdash; CSV).
+            A successful request to this endpoint will deduct one credit from the account associated with the API token.
+            Credits will not be deducted if the request is ill-formed or unsuccessful (e.g. if the engine is unable to return any results).
+          </p>
+        </li>
+        <li className="flex flex-row mb-4">
+          <div className="min-w-fit mr-4">
+            <span className="font-mono text-sm">&nbsp;GET</span> <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">/credits</span>:
+          </div>
+          <p>
+            Returns the number of remaining credits in the account associated with the API token.
+          </p>
+        </li>
+      </ul>
+
+      {/* Examples */}
+      <h3 className="text-2xl text-center font-semibold mb-6">
+        Example Usage
+      </h3>
+      {/* TODO */}
     </div>
   );
 }
