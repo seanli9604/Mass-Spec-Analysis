@@ -34,7 +34,7 @@ class CreateCheckoutSessionRequest(BaseModel):
 class GetUserCredits(BaseModel):
     email_address: str
 
-YOUR_DOMAIN = 'https://moleclue.org'
+YOUR_DOMAIN = 'https://moleclue.org'    # TODO
 
 async def add_tokens_to_user_account(email_addr: str):
     async with AsyncSession(engine) as session:
