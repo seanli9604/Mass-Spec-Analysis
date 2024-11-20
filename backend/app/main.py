@@ -120,6 +120,7 @@ async def webhook_received(request: Request):
 class MassSpectrumData(BaseModel):
     data: str
     filename: str
+    email_address: str
 
 @app.get("/")
 def root():
@@ -143,16 +144,33 @@ def process_mass_spectrum(file_path):
 
 
 @app.post("/analyse")
-def analyse(data: MassSpectrumData):
+async def analyse(data: MassSpectrumData):
+    async with AsyncSession(engine) as session:
+        async with session.begin():
+            # Query the user by email
+            result = await session.execute(
+                select(User).where(User.email == data.email_address)
+            )
+            user = result.scalars().first()
 
-    suffix = f".{data.filename.split('.')[-1]}" if '.' in data.filename else '.txt'
+            if not user:
+                return []
+    
+            if user.credits <= 0:
+                return []
+            
+            suffix = f".{data.filename.split('.')[-1]}" if '.' in data.filename else '.txt'
 
-    with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=suffix) as temp_file:
-        temp_file.write(data.data)
-        temp_file_path = temp_file.name
+            with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=suffix) as temp_file:
+                temp_file.write(data.data)
+                temp_file_path = temp_file.name
 
-    results = process_mass_spectrum(temp_file_path)
-    return results
+            results = process_mass_spectrum(temp_file_path)
+
+            if len(results) > 0:      # deduct a credit only if results are returned
+                user.credits -= 1
+            
+            return results
 
 @app.on_event("startup")
 async def startup():
