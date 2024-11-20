@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import RiseLoader from "react-spinners/RiseLoader";
 import { useUserCredits } from '../context/UserContext';
-import BuyToken from "../components/BuyToken";
+import BuyCredit from "../components/BuyCredit";
 
 export default function LoginPage() {
   const { data: session, status } = useSession();
@@ -62,7 +62,7 @@ export default function LoginPage() {
                 <p className="mb-2">
                   You have {credits} credit{credits !== 1 ? "s" : ""}
                 </p>
-                <BuyToken />
+                <BuyCredit />
               </div>
             </div>
             <hr className="border-top border-gray-300 mx-16 mb-4" />
