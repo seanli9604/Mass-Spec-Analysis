@@ -8,4 +8,4 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
-    credits = Column(Integer, default=5)
+    credits = Column(Integer, default=10)

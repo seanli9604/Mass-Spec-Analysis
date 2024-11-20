@@ -10,7 +10,13 @@ export default function NavButtons() {
     <>
       <Link href="/" className="text-gray-700 hover:text-gray-900 mr-6">
         Home
-      </Link> 
+      </Link>
+      {
+        status === "authenticated" &&
+        <Link href="/api" className="text-gray-700 hover:text-gray-900 mr-6">
+          API
+        </Link>
+      }
       <Link href="/about" className="text-gray-700 hover:text-gray-900 mr-6">
         About
       </Link>

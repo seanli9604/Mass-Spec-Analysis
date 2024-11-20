@@ -23,7 +23,7 @@ export default function HomePage() {
       setLoading(true);
   
       try {
-        if (status !== "authenticated" || !session.user?.email) {
+        if (status !== "authenticated" || !session?.id_token) {
           throw new Error('Unauthorised');
         }
 
@@ -31,7 +31,7 @@ export default function HomePage() {
         const payload = JSON.stringify({
           data: fileContent,
           filename: file.name,
-          email_address: session.user.email,
+          id_token: session?.id_token,
         });
   
         const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/analyse', {

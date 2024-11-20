@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -14,6 +14,8 @@ import os
 from sqlalchemy import select
 from app.models import User
 import re
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 app = FastAPI()
 
@@ -29,12 +31,22 @@ endpoint_secret = os.getenv("STRIPE_WEBHOOK_SIGNING_SECRET")
 
 class CreateCheckoutSessionRequest(BaseModel):
     quantity: int
-    email_address: str
+    id_token: str
 
 class GetUserCredits(BaseModel):
-    email_address: str
+    id_token: str
 
 YOUR_DOMAIN = 'https://moleclue.org'    # TODO
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+
+def verify_google_token(token: str):
+    try:
+        id_info = id_token.verify_oauth2_token(
+            token, requests.Request(), GOOGLE_CLIENT_ID
+        )
+        return id_info
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Google token")
 
 async def add_tokens_to_user_account(email_addr: str):
     async with AsyncSession(engine) as session:
@@ -58,8 +70,14 @@ async def get_user_credits(data: GetUserCredits):
     async with AsyncSession(engine) as session:
         async with session.begin():
             # Query the user by email
+            id_info = verify_google_token(data.id_token)
+            email = id_info.get("email")
+
+            if not email:
+                raise HTTPException(status_code=401, detail="Invalid token payload")
+
             result = await session.execute(
-                select(User).where(User.email == data.email_address)
+                select(User).where(User.email == email)
             )
             user = result.scalars().first()
 
@@ -71,6 +89,12 @@ async def get_user_credits(data: GetUserCredits):
 @app.post('/create-checkout-session')
 async def create_checkout_session(data: CreateCheckoutSessionRequest):    
     try:
+        id_info = verify_google_token(data.id_token)
+        email = id_info.get("email")
+
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid token payload")
+
         checkout_session = stripe.checkout.Session.create(
             line_items=[
                 {
@@ -82,7 +106,7 @@ async def create_checkout_session(data: CreateCheckoutSessionRequest):
             mode='payment',
             success_url=YOUR_DOMAIN + '/',
             cancel_url=YOUR_DOMAIN + '/',
-            client_reference_id=str(data.email_address)
+            client_reference_id=email
         )
 
     except Exception as e:
@@ -120,7 +144,7 @@ async def webhook_received(request: Request):
 class MassSpectrumData(BaseModel):
     data: str
     filename: str
-    email_address: str
+    id_token: str
 
 @app.get("/")
 def root():
@@ -148,8 +172,14 @@ async def analyse(data: MassSpectrumData):
     async with AsyncSession(engine) as session:
         async with session.begin():
             # Query the user by email
+            id_info = verify_google_token(data.id_token)
+            email = id_info.get("email")
+
+            if not email:
+                raise HTTPException(status_code=401, detail="Invalid token payload")
+            
             result = await session.execute(
-                select(User).where(User.email == data.email_address)
+                select(User).where(User.email == email)
             )
             user = result.scalars().first()
 
