@@ -57,7 +57,7 @@ export default function ApiPage() {
       </h4>
       <p className="mb-6">
         API endpoints are located at <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">/api/&lt;endpoint&gt;</span>.
-        Include the API token as part of the request <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">Authorization</span> header as <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">Bearer: &lt;token&gt;</span>.
+        Include the API token as part of the request <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">Authorization</span> header as <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">Bearer &lt;token&gt;</span>.
       </p>
       <h4 className="text-xl font-semibold mb-2">
         Endpoints
@@ -70,9 +70,9 @@ export default function ApiPage() {
           <p>
             Processes a mass spectrometry file and returns a list of SMILES codes as possible results. The body of the request should take the form of a JSON object with keys{" "}
             <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">data</span>{" "}
-            (corresponding to the contents of the file) and{" "}
+            (a string corresponding to the contents of the file) and{" "}
             <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">filename</span>{" "}
-            (the file extension of which determines how the engine will interpret the filetype).
+            (a string; the file extension of which determines how the engine will interpret the filetype).
             Accepted file extensions are{" "}
             <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">*.txt</span> &mdash; MassBank,{" "}
             <span className="border border-gray-300 px-1 text-gray-600 font-mono text-sm inline-block">*.jdx</span> &mdash; JCAMP-DX,{" "}
