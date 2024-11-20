@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from 'react';
-import { useUserCredits } from '../context/UserContext';
+import { useUserContext } from '../context/UserContext';
 import { parseMassSpectrum } from '../utils/parseMassSpectrum';
 import { getFile, sampleFiles } from '../utils/sampleFiles';
 import type { SampleFile } from '../utils/sampleFiles';
@@ -17,7 +17,7 @@ export default function FileUpload({ demo, onFileChange }: FileUploadProps) {
   const [peakData, setPeakData] = useState<{ mz: number; intensity: number }[] | null>(null);
   const [parseError, setParseError] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const { credits, fetchCredits } = useUserCredits();
+  const { credits, fetchCredits } = useUserContext();
 
   useEffect(() => {
     fetchCredits(); // Fetch credits on mount

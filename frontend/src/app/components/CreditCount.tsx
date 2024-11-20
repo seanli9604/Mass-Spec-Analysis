@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { useUserCredits } from '../context/UserContext';
+import { useUserContext } from '../context/UserContext';
 
 export default function CreditCount() {
-  const { credits, fetchCredits } = useUserCredits();
+  const { credits, fetchCredits } = useUserContext();
 
   useEffect(() => {
     fetchCredits(); // Fetch credits on mount

@@ -31,12 +31,12 @@ export default function HomePage() {
         const payload = JSON.stringify({
           data: fileContent,
           filename: file.name,
-          id_token: session?.id_token,
         });
   
         const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/analyse', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${session?.id_token}`,
             'Content-Type': 'application/json',
           },
           body: payload,

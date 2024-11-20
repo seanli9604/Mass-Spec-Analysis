@@ -9,9 +9,7 @@ const stripePromise = loadStripe('pk_test_51QLy8NDiMJiLt3SALGtlYu5iR5OBku3P44vr6
 
 const BuyCredit: React.FC = () => {
     const [loading, setLoading] = useState(false);
-    const { data: loginsession, status } = useSession();
-
-    console.log(loginsession);
+    const { data: loginSession, status } = useSession();
 
     const handleClick = async () => {
         setLoading(true);
@@ -22,11 +20,11 @@ const BuyCredit: React.FC = () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/create-checkout-session`, {
             method: 'POST',
             headers: {
+                'Authorizaton': `Bearer ${loginSession?.id_token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 quantity: 1,
-                email_address: loginsession?.user?.email,
             }),
         });
 

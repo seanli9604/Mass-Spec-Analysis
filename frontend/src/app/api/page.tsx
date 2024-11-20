@@ -1,9 +1,15 @@
 "use client";
 
+import { useEffect } from "react";
 import { FaCopy } from "react-icons/fa";
+import { useUserContext } from "../context/UserContext";
 
 export default function ApiPage() {
-  const token = "TOKEN"
+  const { apiToken, fetchApiToken, regenApiToken } = useUserContext();
+
+  useEffect(() => {
+    fetchApiToken();
+  }, [fetchApiToken]);
   
   return (
     <div className="container mx-auto px-4 w-3/4 text-left">
@@ -18,11 +24,11 @@ export default function ApiPage() {
           <p>Your API token is:</p>
           <div className="flex items-center justify-between border border-gray-300 mx-2 my-2 px-2">
             <p className="flex-grow font-mono text-gray-600 overflow-scroll">
-              {token}
+              {apiToken}
             </p>
             <button
-              className="min-w-max text-gray-600 active:text-gray-400"
-              onClick={() => { navigator.clipboard.writeText(token) }}
+              className="min-w-max text-gray-600 active:text-gray-400 py-1"
+              onClick={() => { navigator.clipboard.writeText(apiToken ?? "") }}
             >
               <FaCopy />
             </button>
@@ -31,12 +37,14 @@ export default function ApiPage() {
             You can generate a new token by clicking the following button.
             Please note that this will invalidate your old token.
           </p>
-          <button
-              className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 w-full text-center mt-2"
-              onClick={() => {}}
-          >
-              Regenerate
-          </button>
+          <div className="flex justify-center">
+            <button
+                className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 w-1/3 min-w-fit text-center mt-2"
+                onClick={regenApiToken}
+            >
+                Regenerate
+            </button>
+          </div>
         </div>
       </div>
 

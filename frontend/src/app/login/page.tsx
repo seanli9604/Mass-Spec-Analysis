@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import RiseLoader from "react-spinners/RiseLoader";
-import { useUserCredits } from '../context/UserContext';
+import { useUserContext } from '../context/UserContext';
 import BuyCredit from "../components/BuyCredit";
 
 export default function LoginPage() {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const { credits, fetchCredits } = useUserCredits();
+  const { credits, fetchCredits } = useUserContext();
 
   useEffect(() => {
     fetchCredits(); // Fetch credits on mount

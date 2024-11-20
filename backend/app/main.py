@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 import subprocess
 import tempfile
@@ -16,6 +17,8 @@ from app.models import User
 import re
 from google.oauth2 import id_token
 from google.auth.transport import requests
+import base64
+import secrets
 
 app = FastAPI()
 
@@ -31,15 +34,13 @@ endpoint_secret = os.getenv("STRIPE_WEBHOOK_SIGNING_SECRET")
 
 class CreateCheckoutSessionRequest(BaseModel):
     quantity: int
-    id_token: str
-
-class GetUserCredits(BaseModel):
-    id_token: str
 
 YOUR_DOMAIN = 'https://moleclue.org'    # TODO
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
-def verify_google_token(token: str):
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def verify_google_token(token: str = Depends(oauth2_scheme)):
     try:
         id_info = id_token.verify_oauth2_token(
             token, requests.Request(), GOOGLE_CLIENT_ID
@@ -65,13 +66,12 @@ async def add_tokens_to_user_account(email_addr: str):
                 new_user = User(email=email_addr, credits=10)
                 session.add(new_user)
 
-@app.post('/credits')
-async def get_user_credits(data: GetUserCredits):
+@app.get('/credits')
+async def get_user_credits(user_info: dict = Depends(verify_google_token)):
     async with AsyncSession(engine) as session:
         async with session.begin():
             # Query the user by email
-            id_info = verify_google_token(data.id_token)
-            email = id_info.get("email")
+            email = user_info.get("email")
 
             if not email:
                 raise HTTPException(status_code=401, detail="Invalid token payload")
@@ -87,10 +87,9 @@ async def get_user_credits(data: GetUserCredits):
                 return {"credits": 0}
 
 @app.post('/create-checkout-session')
-async def create_checkout_session(data: CreateCheckoutSessionRequest):    
+async def create_checkout_session(data: CreateCheckoutSessionRequest, user_info: dict = Depends(verify_google_token)):    
     try:
-        id_info = verify_google_token(data.id_token)
-        email = id_info.get("email")
+        email = user_info.get("email")
 
         if not email:
             raise HTTPException(status_code=401, detail="Invalid token payload")
@@ -144,7 +143,6 @@ async def webhook_received(request: Request):
 class MassSpectrumData(BaseModel):
     data: str
     filename: str
-    id_token: str
 
 @app.get("/")
 def root():
@@ -168,12 +166,11 @@ def process_mass_spectrum(file_path):
 
 
 @app.post("/analyse")
-async def analyse(data: MassSpectrumData):
+async def analyse(data: MassSpectrumData, user_info: dict = Depends(verify_google_token)):
     async with AsyncSession(engine) as session:
         async with session.begin():
             # Query the user by email
-            id_info = verify_google_token(data.id_token)
-            email = id_info.get("email")
+            email = user_info.get("email")
 
             if not email:
                 raise HTTPException(status_code=401, detail="Invalid token payload")
@@ -201,6 +198,56 @@ async def analyse(data: MassSpectrumData):
                 user.credits -= 1
             
             return results
+
+def generate_token():
+    random_bytes = secrets.token_bytes(24)
+    base64_string = base64.urlsafe_b64encode(random_bytes).decode("utf-8").rstrip("=")
+    return base64_string
+
+@app.get("/token")
+def token(user_info: dict = Depends(verify_google_token)):
+    async with AsyncSession(engine) as session:
+        async with session.begin():
+            # Query the user by email
+            email = user_info.get("email")
+
+            if not email:
+                raise HTTPException(status_code=401, detail="Invalid token payload")
+            
+            result = await session.execute(
+                select(User).where(User.email == email)
+            )
+            user = result.scalars().first()
+
+            if not user:
+                raise HTTPException(status_code=401, detail="Invalid user")
+
+            if not user.token:
+                user.token = generate_token()
+            
+            return user.token
+
+@app.delete("/token")
+def token(user_info: dict = Depends(verify_google_token)):
+    async with AsyncSession(engine) as session:
+        async with session.begin():
+            # Query the user by email
+            email = user_info.get("email")
+
+            if not email:
+                raise HTTPException(status_code=401, detail="Invalid token payload")
+            
+            result = await session.execute(
+                select(User).where(User.email == email)
+            )
+            user = result.scalars().first()
+
+            if not user:
+                raise HTTPException(status_code=401, detail="Invalid user")
+
+            user.token = generate_token()
+            
+            return user.token
 
 @app.on_event("startup")
 async def startup():

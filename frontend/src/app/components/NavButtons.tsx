@@ -21,7 +21,7 @@ export default function NavButtons() {
         About
       </Link>
       <Link href="/login" className="text-gray-700 hover:text-gray-900">
-        {status === "unauthenticated" ? "Login" : "Account"}
+        {status === "authenticated" ? "Account" : "Login"}
       </Link>
     </>
   );
