@@ -205,7 +205,7 @@ def generate_token():
     return base64_string
 
 @app.get("/token")
-def token(user_info: dict = Depends(verify_google_token)):
+async def token(user_info: dict = Depends(verify_google_token)):
     async with AsyncSession(engine) as session:
         async with session.begin():
             # Query the user by email
@@ -228,7 +228,7 @@ def token(user_info: dict = Depends(verify_google_token)):
             return user.token
 
 @app.delete("/token")
-def token(user_info: dict = Depends(verify_google_token)):
+async def token(user_info: dict = Depends(verify_google_token)):
     async with AsyncSession(engine) as session:
         async with session.begin():
             # Query the user by email
