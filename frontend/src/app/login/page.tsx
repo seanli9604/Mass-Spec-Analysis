@@ -6,12 +6,16 @@ import RiseLoader from "react-spinners/RiseLoader";
 import { useUserContext } from '../context/UserContext';
 import BuyCredit from "../components/BuyCredit";
 
+interface EnsureUserResponse {
+  credits: number;
+}
+
 export default function LoginPage() {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const { credits, fetchCredits, setCredits } = useUserCredits();
 
-  // Ensure user record after sign-in
+
   useEffect(() => {
     if (status === "authenticated" && session?.user?.email) {
       const ensureUser = async () => {
@@ -22,7 +26,7 @@ export default function LoginPage() {
           },
           body: JSON.stringify({ email_address: session?.user?.email })
         });
-        const data = await response.json();
+        const data: EnsureUserResponse = await response.json();
         setCredits(data.credits);
       };
       ensureUser();
