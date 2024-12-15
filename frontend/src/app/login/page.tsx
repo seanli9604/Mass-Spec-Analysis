@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import RiseLoader from "react-spinners/RiseLoader";
-import { useUserCredits } from '../context/UserContext';
-import BuyToken from "../components/BuyToken";
+import { useUserContext } from '../context/UserContext';
+import BuyCredit from "../components/BuyCredit";
 
 export default function LoginPage() {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
+<<<<<<< HEAD
   const { credits, fetchCredits, setCredits } = useUserCredits();
 
   // Ensure user record after sign-in
@@ -28,6 +29,9 @@ export default function LoginPage() {
       ensureUser();
     }
   }, [status, session?.user?.email, setCredits]);
+=======
+  const { credits, fetchCredits } = useUserContext();
+>>>>>>> 3b17e894b4de01835d3368b9f928a8336d030c57
 
   useEffect(() => {
     if (status === "authenticated" && session?.user?.email) {
@@ -82,7 +86,7 @@ export default function LoginPage() {
                 <p className="mb-2">
                   You have {credits} credit{credits !== 1 ? "s" : ""}
                 </p>
-                <BuyToken />
+                <BuyCredit />
               </div>
             </div>
             <hr className="border-top border-gray-300 mx-16 mb-4" />

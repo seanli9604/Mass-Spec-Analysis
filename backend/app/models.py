@@ -8,4 +8,5 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
-    credits = Column(Integer)
+    credits = Column(Integer, default=10)
+    token = Column(String, unique=True)

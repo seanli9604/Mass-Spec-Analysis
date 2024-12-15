@@ -3,14 +3,13 @@
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { useSession } from 'next-auth/react';
+import RiseLoader from "react-spinners/RiseLoader";
 
 const stripePromise = loadStripe('pk_test_51QLy8NDiMJiLt3SALGtlYu5iR5OBku3P44vr6F0Edubpc78eVQHINWYeJkh1BOfryybwJEbTGaVSeM74WfEeVpAs00xj2ZkxRq');
 
-const BuyToken: React.FC = () => {
+const BuyCredit: React.FC = () => {
     const [loading, setLoading] = useState(false);
-    const { data: loginsession, status } = useSession();
-
-    console.log(loginsession);
+    const { data: loginSession, status } = useSession();
 
     const handleClick = async () => {
         setLoading(true);
@@ -21,11 +20,11 @@ const BuyToken: React.FC = () => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/create-checkout-session`, {
             method: 'POST',
             headers: {
+                'Authorizaton': `Bearer ${loginSession?.id_token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 quantity: 1,
-                email_address: loginsession?.user?.email,
             }),
         });
 
@@ -56,15 +55,21 @@ const BuyToken: React.FC = () => {
 
 
     if (status === 'authenticated') {
-        return (
-            <button
-                className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 w-full mb-4 text-center"
-                onClick={handleClick}
-                disabled={loading}
-            >
-                {loading ? 'Loading...' : 'Buy Tokens'}
-            </button>
-        );
+        if (loading) {
+            return (
+                <RiseLoader color="#848484" size="5px" className="mt-4 mb-6" />
+            );
+        } else {
+            return (
+                <button
+                    className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 w-full mb-4 text-center"
+                    onClick={handleClick}
+                    disabled={loading}
+                >
+                    Buy Credits
+                </button>
+            );
+        }
     } else {
         return (
             <button
@@ -72,7 +77,7 @@ const BuyToken: React.FC = () => {
                 onClick={handleClick}
                 disabled={true}
             >
-                Login to buy tokens
+                Login to buy credits
             </button>
         );
     }
@@ -80,4 +85,4 @@ const BuyToken: React.FC = () => {
    
 };
 
-export default BuyToken;
+export default BuyCredit;

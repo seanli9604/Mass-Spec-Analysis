@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useUserContext } from '../context/UserContext';
 import { parseMassSpectrum } from '../utils/parseMassSpectrum';
 import { getFile, sampleFiles } from '../utils/sampleFiles';
 import type { SampleFile } from '../utils/sampleFiles';
@@ -16,6 +17,11 @@ export default function FileUpload({ demo, onFileChange }: FileUploadProps) {
   const [peakData, setPeakData] = useState<{ mz: number; intensity: number }[] | null>(null);
   const [parseError, setParseError] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { credits, fetchCredits } = useUserContext();
+
+  useEffect(() => {
+    fetchCredits(); // Fetch credits on mount
+  }, [fetchCredits]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -134,15 +140,27 @@ export default function FileUpload({ demo, onFileChange }: FileUploadProps) {
         )}
       </div>
       {
-        !demo && selectedFile && !parseError &&
-        <>
-          <p className="text-gray-600 text-sm mt-2">Processing this file will use 1 credit.</p>
-          <div className="flex justify-center mt-2" onClick={() => { onFileChange(selectedFile) }}>
-            <button className="block border border-gray-300 w-full px-4 py-2 cursor-pointer hover:bg-gray-100 text-center">
-              Process
-            </button>
-          </div>
-        </>
+        !demo && selectedFile && !parseError && (
+          credits !== null && credits > 0 && (
+            <>
+              <p className="text-gray-600 text-sm mt-2">Processing this file will use 1 credit.</p>
+              <div className="flex justify-center mt-2" onClick={() => { onFileChange(selectedFile) }}>
+                <button className="block border border-gray-300 w-full px-4 py-2 cursor-pointer hover:bg-gray-100 text-center">
+                  Process
+                </button>
+              </div>
+            </>
+          ) || (
+            <>
+              <p className="text-red-600 text-sm mt-2">Insufficient credits to process.</p>
+              <div className="flex justify-center mt-2" onClick={() => { onFileChange(selectedFile) }}>
+                <button disabled className="block border border-gray-300 w-full px-4 py-2 cursor-not-allowed text-gray-400 text-center">
+                  Process
+                </button>
+              </div>
+            </>
+          )
+        )
       }
     </div>
   );

@@ -7,6 +7,7 @@ import Results from './components/Results';
 import RiseLoader from "react-spinners/RiseLoader";
 
 export default function HomePage() {
+  const { data: session, status } = useSession();
   const [showResults, setShowResults] = useState(false);
   const [smilesArr, setSmilesArr] = useState<string[]>(
     [
@@ -22,6 +23,10 @@ export default function HomePage() {
       setLoading(true);
   
       try {
+        if (status !== "authenticated" || !session?.id_token) {
+          throw new Error('Unauthorised');
+        }
+
         const fileContent = await file.text();
         const payload = JSON.stringify({
           data: fileContent,
@@ -31,6 +36,7 @@ export default function HomePage() {
         const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/analyse', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${session?.id_token}`,
             'Content-Type': 'application/json',
           },
           body: payload,
@@ -55,8 +61,6 @@ export default function HomePage() {
       setShowResults(false);
     }
   };
-
-  const { status } = useSession();
 
   if (status === "authenticated") {
     return (

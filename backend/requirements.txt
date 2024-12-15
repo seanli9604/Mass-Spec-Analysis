@@ -4,3 +4,4 @@ sqlalchemy
 asyncpg
 requests
 stripe
+google-auth
