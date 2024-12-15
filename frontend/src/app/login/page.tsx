@@ -3,17 +3,14 @@
 import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import RiseLoader from "react-spinners/RiseLoader";
-import { useUserContext } from '../context/UserContext';
 import BuyCredit from "../components/BuyCredit";
-
-interface EnsureUserResponse {
-  credits: number;
-}
+import { useUserContext } from "../context/UserContext";
 
 export default function LoginPage() {
+  // 
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const { credits, fetchCredits, setCredits } = useUserCredits();
+  const { credits, fetchCredits } = useUserContext();
 
 
   useEffect(() => {
@@ -26,12 +23,11 @@ export default function LoginPage() {
           },
           body: JSON.stringify({ email_address: session?.user?.email })
         });
-        const data: EnsureUserResponse = await response.json();
-        setCredits(data.credits);
+        await response.json();
       };
       ensureUser();
     }
-  }, [status, session?.user?.email, setCredits]);
+  }, [status, session?.user?.email]);
 
   useEffect(() => {
     if (status === "authenticated" && session?.user?.email) {
@@ -102,7 +98,3 @@ export default function LoginPage() {
     </div>
   );
 }
-function useUserCredits(): { credits: any; fetchCredits: any; setCredits: any; } {
-  throw new Error("Function not implemented.");
-}
-
