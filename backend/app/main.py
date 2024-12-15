@@ -117,6 +117,8 @@ async def create_checkout_session(data: CreateCheckoutSessionRequest, user_info:
 
 
 
+
+
 @app.post("/webhook")
 async def webhook_received(request: Request):
     payload = await request.body()
@@ -150,6 +152,10 @@ class MassSpectrumData(BaseModel):
 @app.get("/")
 def root():
     return {"message": "Hello world!"}
+
+
+class EnsureUserRequest(BaseModel):
+    email_address: str
 
 @app.post('/ensure-user')
 async def ensure_user(data: EnsureUserRequest):
