@@ -9,11 +9,31 @@ import BuyToken from "../components/BuyToken";
 export default function LoginPage() {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const { credits, fetchCredits } = useUserCredits();
+  const { credits, fetchCredits, setCredits } = useUserCredits();
+
+  // Ensure user record after sign-in
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.email) {
+      const ensureUser = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ensure-user`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email_address: session?.user?.email })
+        });
+        const data = await response.json();
+        setCredits(data.credits);
+      };
+      ensureUser();
+    }
+  }, [status, session?.user?.email, setCredits]);
 
   useEffect(() => {
-    fetchCredits(); // Fetch credits on mount
-  }, [fetchCredits]);
+    if (status === "authenticated" && session?.user?.email) {
+      fetchCredits();
+    }
+  }, [status, session?.user?.email, fetchCredits]);
 
   const handleSignIn = async () => {
     setIsLoading(true);

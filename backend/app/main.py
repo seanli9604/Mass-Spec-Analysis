@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -24,6 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+DEFAULT_CREDITS_ON_SIGNUP = 5
+
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 endpoint_secret = os.getenv("STRIPE_WEBHOOK_SIGNING_SECRET")
 
@@ -32,6 +35,9 @@ class CreateCheckoutSessionRequest(BaseModel):
     email_address: str
 
 class GetUserCredits(BaseModel):
+    email_address: str
+
+class EnsureUserRequest(BaseModel):
     email_address: str
 
 YOUR_DOMAIN = 'https://moleclue.org'
@@ -109,7 +115,7 @@ async def webhook_received(request: Request):
         # Retrieve the user ID from the session
         email_address = session.get('client_reference_id')
         if email_address:
-            # Update user's account in your database
+            # Updatepostgres user's account in your database
             await add_tokens_to_user_account(email_address)
         else:
             # Handle the case where user_id is not available
@@ -124,6 +130,20 @@ class MassSpectrumData(BaseModel):
 @app.get("/")
 def root():
     return {"message": "Hello world!"}
+
+@app.post('/ensure-user')
+async def ensure_user(data: EnsureUserRequest):
+    async with AsyncSession(engine) as session:
+        async with session.begin():
+            result = await session.execute(
+                select(User).where(User.email == data.email_address)
+            )
+            user = result.scalars().first()
+            if not user:
+                user = User(email=data.email_address, credits=DEFAULT_CREDITS_ON_SIGNUP)
+                session.add(user)
+            return {"credits": user.credits}
+
 
 def process_mass_spectrum(file_path):
     HOST_IP = 'host.docker.internal'  # Host's IP address
@@ -143,7 +163,18 @@ def process_mass_spectrum(file_path):
 
 
 @app.post("/analyse")
-def analyse(data: MassSpectrumData):
+async def analyse(data: MassSpectrumData):
+    async with AsyncSession(engine) as session:
+        async with session.begin():
+            result = await session.execute(
+                select(User).where(User.email == data.email_address)
+            )
+            user = result.scalars().first()
+            if not user or user.credits < 1:
+                raise HTTPException(status_code=400, detail="Not enough credits")
+
+            # Deduct one credit
+            user.credits -= 1
 
     suffix = f".{data.filename.split('.')[-1]}" if '.' in data.filename else '.txt'
 

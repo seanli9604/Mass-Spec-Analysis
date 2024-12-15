@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 interface UserContextType {
   credits: number | null;
   fetchCredits: () => Promise<void>;
+  setCredits: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -12,24 +13,25 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const fetchCredits = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/credits`);  // TODO user session
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/credits`);
       if (res.ok) {
         const data = await res.json();
         setCredits(data.credits);
+      } else {
+        setCredits(0);
       }
-      setCredits(1);
     } catch (error) {
       console.error('Failed to fetch credits:', error);
+      setCredits(0); // fallback in case of error
     }
-    setCredits(0); // fallback
   };
 
   useEffect(() => {
     fetchCredits(); // Fetch credits on mount
-  }, [fetchCredits]);
+  }, []);
 
   return (
-    <UserContext.Provider value={{ credits, fetchCredits }}>
+    <UserContext.Provider value={{ credits, fetchCredits, setCredits }}>
       {children}
     </UserContext.Provider>
   );
@@ -38,7 +40,7 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 export const useUserCredits = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUserCredits must be used within a UserCreditsProvider');
+    throw new Error('useUserCredits must be used within a UserContextProvider');
   }
   return context;
 };
