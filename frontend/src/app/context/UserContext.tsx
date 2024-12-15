@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 
 interface UserContextType {
@@ -16,13 +16,12 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [credits, setCredits] = useState<number | null>(null);
   const [apiToken, setApiToken] = useState<string | null>(null);
 
-  const fetchCredits = useCallback(async () => {
-    if (!session?.id_token) return;
+  const fetchCredits = async () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/credits`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${session.id_token}`,
+          'Authorization': `Bearer ${session?.id_token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -36,15 +35,14 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       console.error('Failed to fetch credits:', error);
       setCredits(0); // fallback in case of error
     }
-  }, [session?.id_token]);
+  };
 
-  const fetchApiToken = useCallback(async () => {
-    if (!session?.id_token) return;
+  const fetchApiToken = async () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/token`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${session.id_token}`,
+          'Authorization': `Bearer ${session?.id_token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -55,15 +53,14 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     } catch (error) {
       console.error('Failed to fetch API token:', error);
     }
-  }, [session?.id_token]);
+  };
 
-  const regenApiToken = useCallback(async () => {
-    if (!session?.id_token) return;
+  const regenApiToken = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/token`, { // Make sure this URL is correct
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/token`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${session.id_token}`,
+          'Authorization': `Bearer ${session?.id_token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -74,15 +71,13 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     } catch (error) {
       console.error('Failed to regenerate API token:', error);
     }
-  }, [session?.id_token]);
+  }
 
   useEffect(() => {
-    // Only run if we have a session id_token
-    if (session?.id_token) {
-      fetchCredits();
-      fetchApiToken();
-    }
-  }, [session?.id_token, fetchCredits, fetchApiToken]);
+    // Fetch credits and API token on mount
+    fetchCredits();
+    fetchApiToken();
+  }, [fetchCredits, fetchApiToken]);
 
   return (
     <UserContext.Provider value={{ credits, fetchCredits, apiToken, fetchApiToken, regenApiToken }}>
