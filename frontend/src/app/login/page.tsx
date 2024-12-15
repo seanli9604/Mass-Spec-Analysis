@@ -9,7 +9,6 @@ import BuyCredit from "../components/BuyCredit";
 export default function LoginPage() {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-<<<<<<< HEAD
   const { credits, fetchCredits, setCredits } = useUserCredits();
 
   // Ensure user record after sign-in
@@ -29,9 +28,6 @@ export default function LoginPage() {
       ensureUser();
     }
   }, [status, session?.user?.email, setCredits]);
-=======
-  const { credits, fetchCredits } = useUserContext();
->>>>>>> 3b17e894b4de01835d3368b9f928a8336d030c57
 
   useEffect(() => {
     if (status === "authenticated" && session?.user?.email) {
@@ -102,3 +98,7 @@ export default function LoginPage() {
     </div>
   );
 }
+function useUserCredits(): { credits: any; fetchCredits: any; setCredits: any; } {
+  throw new Error("Function not implemented.");
+}
+
