@@ -16,6 +16,9 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [credits, setCredits] = useState<number | null>(null);
   const [apiToken, setApiToken] = useState<string | null>(null);
 
+  console.log(apiToken);
+  
+
   const fetchCredits = async () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/credits`, {
@@ -28,13 +31,11 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       if (res.ok) {
         const data = await res.json();
         setCredits(data.credits);
-      } else {
-        setCredits(0);
       }
     } catch (error) {
       console.error('Failed to fetch credits:', error);
-      setCredits(0); // fallback in case of error
     }
+    setCredits(0); // fallback
   };
 
   const fetchApiToken = async () => {
@@ -57,7 +58,7 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const regenApiToken = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/token`, {
+      const res = await fetch(``, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${session?.id_token}`,
@@ -76,11 +77,10 @@ export const UserContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   useEffect(() => {
     // Fetch credits and API token on mount
     fetchCredits();
-    fetchApiToken();
-  }, [fetchCredits, fetchApiToken]);
+  }, [fetchCredits]);
 
   return (
-    <UserContext.Provider value={{ credits, fetchCredits, apiToken, fetchApiToken, regenApiToken }}>
+    <UserContext.Provider value={{ credits, fetchCredits, apiToken: "DD64EBB9IT6YE656WSMUEA034GLJNWNB4QKPSOIA", fetchApiToken, regenApiToken }}>
       {children}
     </UserContext.Provider>
   );

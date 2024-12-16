@@ -7,7 +7,6 @@ import BuyCredit from "../components/BuyCredit";
 import { useUserContext } from "../context/UserContext";
 
 export default function LoginPage() {
-  // 
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const { credits, fetchCredits } = useUserContext();
@@ -34,6 +33,10 @@ export default function LoginPage() {
       fetchCredits();
     }
   }, [status, session?.user?.email, fetchCredits]);
+
+  useEffect(() => {
+    fetchCredits();
+  }, [])
 
   const handleSignIn = async () => {
     setIsLoading(true);

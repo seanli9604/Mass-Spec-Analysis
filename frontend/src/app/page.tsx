@@ -23,9 +23,9 @@ export default function HomePage() {
       setLoading(true);
   
       try {
-        if (status !== "authenticated" || !session?.id_token) {
-          throw new Error('Unauthorised');
-        }
+        // if (status !== "authenticated" || !session?.id_token) {
+        //   throw new Error('Unauthorised');
+        // }
 
         const fileContent = await file.text();
         const payload = JSON.stringify({

@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { FaCopy } from "react-icons/fa";
-import { useUserContext } from "../context/UserContext";
+// impyort { useUserContext } from "../context/UserContext";
 
 export default function ApiPage() {
-  const { apiToken, fetchApiToken, regenApiToken } = useUserContext();
+  // const { fetchApiToken, regenApiToken } = useUserContext();
 
-  useEffect(() => {
-    fetchApiToken();
-  }, [fetchApiToken]);
-  
+  const apiToken = "DD64EBB9IT6YE656WSMUEA034GLJNWNB4QKPSOIA" 
+
+  // useEffect(() => {
+  //   fetchApiToken();
+  // }, [fetchApiToken]);
+  // useEffect(() => {
+    //   fetchApiToken();
+    // }, [fetchApiToken]);
+    
   return (
     <div className="container mx-auto px-4 w-3/4 text-left">
       <h2 className="text-3xl text-center font-bold mb-6">API Usage</h2>
@@ -40,7 +45,7 @@ export default function ApiPage() {
           <div className="flex justify-center">
             <button
                 className="block border border-gray-300 p-2 cursor-pointer hover:bg-gray-100 w-1/3 min-w-fit text-center mt-2"
-                onClick={regenApiToken}
+                onClick={() => alert("Token regeneration not implemented.")}
             >
                 Regenerate
             </button>
